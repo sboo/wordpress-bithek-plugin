@@ -25,6 +25,20 @@ class Bithek_Admin
 
     private $debug = false;
 
+    private $required_columns = array(
+        'ISBN',
+        'Titel',
+        'Verfasser I',
+        'Verfasser II',
+        'Verfasser III',
+        'Medienart',
+        'ausgeliehen?',
+        'Schlagwort',
+        'SK I',
+        'SK II',
+        'tasdf'
+    );
+
     /**
      * The ID of this plugin.
      *
@@ -205,10 +219,10 @@ class Bithek_Admin
         if ($this->debug) {
             echo '<pre>';
         }
-        @unlink($this->db_directory . '/bibi-clean.xml');
-        $xml = file_get_contents($file_path);
-        $xml = self::stripInvalidXml($xml);
-        file_put_contents($this->db_directory . '/bibi-clean.xml', $xml);
+//        @unlink($this->db_directory . '/bibi-clean.xml');
+//        $xml = file_get_contents($file_path);
+//        $xml = self::stripInvalidXml($xml);
+//        file_put_contents($this->db_directory . '/bibi-clean.xml', $xml);
 
         $xmlDoc = new DOMDocument();
         $xmlDoc->load($this->db_directory . '/bibi-clean.xml');
@@ -223,6 +237,13 @@ class Bithek_Admin
             $colTypes[$idx] = $col->getAttribute('TYPE');
             $colNameTranslations[$idx] = self::slugify($col->getAttribute('NAME'));
         }
+
+        $col_diff = array_diff($this->required_columns, $colNames);
+
+        if(count($col_diff)) {
+            return false;
+        }
+
 
         unlink($this->db_directory . '/books.db3');
         $dbh = new PDO('sqlite:' . $this->db_directory . '/books.db3');
