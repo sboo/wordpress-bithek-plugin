@@ -41,6 +41,8 @@ class Bithek_Public
      */
     private $version;
 
+    private $db_directory;
+
     /**
      * Initialize the class and set its properties.
      *
@@ -53,6 +55,7 @@ class Bithek_Public
 
         $this->plugin_name = $plugin_name;
         $this->version = $version;
+        $this->db_directory = dirname(plugin_dir_path(__FILE__)) . '/db';
 
     }
 
@@ -191,9 +194,7 @@ class Bithek_Public
             || !empty($thema)
             /*|| !empty($medienart)*/
         ) {
-            $plugindir = dirname(plugin_dir_path(__FILE__));
-            $sqliteFileName = $plugindir . '/includes/books.db3';
-            $dbh = new PDO('sqlite:' . $sqliteFileName);
+            $dbh = new PDO('sqlite:' . $this->db_directory . '/books.db3');
             if (!$dbh) {
                 echo "\nnew PDO::errorInfo():\n";
                 print_r($dbh->errorInfo());
