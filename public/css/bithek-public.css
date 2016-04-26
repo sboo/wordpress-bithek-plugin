@@ -1,0 +1,60 @@
+#content table.bithek-resultlist * {
+    vertical-align: middle;
+    padding:0;
+}
+
+
+#content table.bithek-searchform,
+#content table.bithek-searchform td {
+    border: 0;
+}
+
+#content table.bithek-resultlist,
+#content table.bithek-resultlist td {
+    border: 0;
+}
+
+#content table.bithek-resultlist td {
+    border-bottom:1px solid #e6e6e6;
+}
+
+#content table.bithek-searchform td input {
+    margin:0;
+}
+
+.bithek-result {
+    padding: 0.25em 0;
+
+    background-position: right 5px;
+    background-repeat: no-repeat;
+    background-size:50px auto;
+    height: 100px;
+}
+
+.bithek-result .book {
+    width:60%;
+}
+
+.bithek-result .status {
+    width:30%;
+}
+
+.bithek-result .verfasser_i {
+    font-size: 0.7em;
+    margin-bottom:-5px;
+}
+.bithek-result .ausgeliehen {
+    font-size: 0.7em;
+}
+
+.bithek-result .medienart {
+    font-size: 0.7em;
+}
+
+.bithek-result .image {
+    width:10%;
+    text-align: right;
+}
+.bithek-result .image img {
+    width:60px;
+}
