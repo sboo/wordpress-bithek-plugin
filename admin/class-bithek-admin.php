@@ -67,6 +67,11 @@ class Bithek_Admin
     private $db_directory;
 
     /**
+     * @var DateTime
+     */
+    private $last_update_datetime;
+
+    /**
      * Initialize the class and set its properties.
      *
      * @since    1.0.0
@@ -79,6 +84,11 @@ class Bithek_Admin
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->db_directory = dirname(plugin_dir_path(__FILE__)) . '/db';
+
+        if (file_exists($this->db_directory . '/books.db3')) {
+            $this->last_update_datetime = new \DateTime('@' . filemtime($this->db_directory . '/books.db3'));
+            $this->last_update_datetime->setTimezone(new \DateTimeZone('Europe/Zurich'));
+        }
 
     }
 
@@ -205,7 +215,7 @@ class Bithek_Admin
 
     public function admin_notice_error()
     {
-        while( null !== ($message = array_pop($this->errorMessages))) {
+        while (null !== ($message = array_pop($this->errorMessages))) {
             $class = 'notice notice-error is-dismissible';
             printf('<div class="%1$s"><p>%2$s</p></div>', $class, $message);
         }
@@ -246,7 +256,7 @@ class Bithek_Admin
 
         $col_diff = array_diff($this->required_columns, $colNames);
 
-        if(count($col_diff)) {
+        if (count($col_diff)) {
             throw new \Exception('Die folgenden Felder fehlen im Export: ' . implode(', ', $col_diff));
         }
 
