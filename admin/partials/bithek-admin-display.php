@@ -4,7 +4,7 @@
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
 
     <form method="post" enctype="multipart/form-data" name="bithek_settings"
-          action="options-general.php?page=<?php echo $this->plugin_name; ?>">
+          action="admin.php?page=<?php echo $this->plugin_name; ?>">
         <table class="form-table">
             <?php if (!is_null($this->last_update_datetime)) { ?>
                 <tr>

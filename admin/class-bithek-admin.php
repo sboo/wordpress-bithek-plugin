@@ -143,6 +143,44 @@ class Bithek_Admin
     }
 
     /**
+     * @return array
+     */
+    protected function get_bithek_caps() {
+
+        $bithek_caps = array(
+            'bithek_import' => 1,
+        );
+
+        return $bithek_caps;
+    }
+
+    /**
+     *
+     */
+    public function init_bithek_caps() {
+        global $wp_roles;
+
+        if (!isset($wp_roles)) {
+            $wp_roles = new WP_Roles();
+        }
+
+        if (!isset($wp_roles->roles['administrator'])) {
+            return;
+        }
+
+        $old_use_db = $wp_roles->use_db;
+        $wp_roles->use_db = true;
+        $administrator = $wp_roles->role_objects['administrator'];
+        $bithek_caps = $this->get_bithek_caps();
+        foreach(array_keys($bithek_caps) as $cap) {
+            if (!$administrator->has_cap($cap)) {
+                $administrator->add_cap($cap, true);
+            }
+        }
+        $wp_roles->use_db = $old_use_db;
+    }
+
+    /**
      * Register the administration menu for this plugin into the WordPress Dashboard menu.
      *
      * @since    1.0.0
@@ -150,9 +188,8 @@ class Bithek_Admin
 
     public function add_plugin_admin_menu()
     {
-
-        add_options_page('BiThek Import', 'BiThek Import', 'manage_options', $this->plugin_name,
-            array($this, 'display_plugin_setup_page')
+        add_menu_page('BiThek Import', 'BiThek Import', 'bithek_import', $this->plugin_name,
+            array($this, 'display_plugin_setup_page'), 'dashicons-book', 50
         );
     }
 
