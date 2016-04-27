@@ -35,9 +35,13 @@ class Bithek_Admin
         'ausgeliehen?',
         'Schlagwort',
         'SK I',
-        'SK II',
-        'tasdf'
+        'SK II'
     );
+
+    /**
+     * @var array
+     */
+    public $errorMessages = array();
 
     /**
      * The ID of this plugin.
@@ -178,10 +182,11 @@ class Bithek_Admin
     public function process_bithek_settings()
     {
         if (isset($_FILES['bithek-import']) && !$_FILES['bithek-import']['error']) {
-            $success = $this->process_import($_FILES['bithek-import']['tmp_name']);
-            if ($success) {
+            try {
+                $this->process_import($_FILES['bithek-import']['tmp_name']);
                 add_action('admin_notices', array($this, 'admin_notice_success'));
-            } else {
+            } catch (\Exception $e) {
+                $this->errorMessages[] = $e->getMessage();
                 add_action('admin_notices', array($this, 'admin_notice_error'));
             }
         }
@@ -200,15 +205,16 @@ class Bithek_Admin
 
     public function admin_notice_error()
     {
-        $class = 'notice notice-error is-dismissible';
-        $message = __('Etwas ist schiefgegangen. Probier es nochals', 'bithek');
-
-        printf('<div class="%1$s"><p>%2$s</p></div>', $class, $message);
+        while( null !== ($message = array_pop($this->errorMessages))) {
+            $class = 'notice notice-error is-dismissible';
+            printf('<div class="%1$s"><p>%2$s</p></div>', $class, $message);
+        }
     }
 
 
     /**
-     * @param string $file_path
+     * @param $file_path
+     * @throws Exception
      */
     private function process_import($file_path)
     {
@@ -219,10 +225,10 @@ class Bithek_Admin
         if ($this->debug) {
             echo '<pre>';
         }
-//        @unlink($this->db_directory . '/bibi-clean.xml');
-//        $xml = file_get_contents($file_path);
-//        $xml = self::stripInvalidXml($xml);
-//        file_put_contents($this->db_directory . '/bibi-clean.xml', $xml);
+        @unlink($this->db_directory . '/bibi-clean.xml');
+        $xml = file_get_contents($file_path);
+        $xml = self::stripInvalidXml($xml);
+        file_put_contents($this->db_directory . '/bibi-clean.xml', $xml);
 
         $xmlDoc = new DOMDocument();
         $xmlDoc->load($this->db_directory . '/bibi-clean.xml');
@@ -241,7 +247,7 @@ class Bithek_Admin
         $col_diff = array_diff($this->required_columns, $colNames);
 
         if(count($col_diff)) {
-            return false;
+            throw new \Exception('Die folgenden Felder fehlen im Export: ' . implode(', ', $col_diff));
         }
 
 
@@ -253,7 +259,7 @@ class Bithek_Admin
                 print_r($dbh->errorInfo());
                 die;
             }
-            return false;
+            throw new \Exception(PDO::errorInfo());
         }
 
 
@@ -264,7 +270,7 @@ class Bithek_Admin
                 print_r($dbh->errorInfo());
                 die;
             }
-            return false;
+            throw new \Exception(PDO::errorInfo());
         }
 
         $columnDefinitions = [];
@@ -306,7 +312,7 @@ class Bithek_Admin
                 print_r($dbh->errorInfo());
                 die;
             }
-            return false;
+            throw new \Exception($dbh->errorInfo());
 
         }
 
@@ -324,7 +330,7 @@ class Bithek_Admin
                 print_r($dbh->errorInfo());
                 die();
             }
-            return false;
+            throw new \Exception($dbh->errorInfo());
         }
 
         foreach ($xmlItems as $xmlItem) {
@@ -386,6 +392,7 @@ class Bithek_Admin
                     echo "\ninsert PDO::errorInfo():\n";
                     die;
                 }
+                throw new \Exception(PDO::errorInfo());
             }
             if ($this->debug) {
                 echo 'inserted' . "\r\n\r\n";
@@ -396,8 +403,6 @@ class Bithek_Admin
         if ($this->debug) {
             die('finished');
         }
-
-        return true;
     }
 
     /**
