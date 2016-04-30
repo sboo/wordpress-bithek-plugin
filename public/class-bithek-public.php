@@ -202,16 +202,16 @@ class Bithek_Public
             $where = [];
             $params = [];
             if (!empty($titel)) {
-                $titel = preg_replace('/[^\d\s\w]/i','', $titel);
+                $titel = preg_replace('/[^\d\s\p{L}\p{Nd}]/ui','', $titel);
                 $arrTitle = explode(' ', $titel);
                 foreach($arrTitle as $word) {
                     $where[] = 'titel LIKE ?';
-                    $params[] = '%' . $titel . '%';
+                    $params[] = '%' . $word . '%';
                 }
             }
 
             if (!empty($verfasser_i)) {
-                $verfasser_i = preg_replace('/[^\d\s\w]/i','', $verfasser_i);
+                $verfasser_i = preg_replace('/[^\d\s\p{L}\p{Nd}]/ui','', $verfasser_i);
                 $arrVervasser_i = explode(' ', $verfasser_i);
                 foreach($arrVervasser_i as $word) {
                     $where[] = 'verfasser_i LIKE ?';
@@ -220,7 +220,7 @@ class Bithek_Public
             }
 
             if (!empty($thema)) {
-                $thema = preg_replace('/[^\d\s\w]/i','', $thema);
+                $thema = preg_replace('//[^\d\s\p{L}\p{Nd}]/ui','', $thema);
                 $arrThema = explode(' ', $thema);
                 foreach($arrThema as $word) {
                     $where[] = '(schlagwort LIKE ? OR sk_i LIKE ? OR sk_ii LIKE ?)';
