@@ -222,7 +222,7 @@ class Bithek_Public
             }
 
             if (!empty($thema)) {
-                $thema = preg_replace('//[^\d\s\p{L}\p{Nd}]/ui',' ', $thema);
+                $thema = preg_replace('/[^\d\s\p{L}\p{Nd}]/ui',' ', $thema);
                 $arrThema = explode(' ', $thema);
                 $arrThema = array_filter($arrThema);
                 foreach($arrThema as $word) {
